@@ -1,0 +1,68 @@
+{
+  "app": {
+    "title": "Audio Speed Scheduler",
+    "subtitle": "Upload audio files, set playback speeds, and create personalized playlists"
+  },
+  "audioFileManager": {
+    "title": "Audio File Management",
+    "upload": {
+      "dragDrop": "Click or drag to upload audio files",
+      "supportedFormats": "Supports MP3, WAV, AAC, OGG formats"
+    },
+    "fileList": {
+      "title": "Uploaded Audio Files",
+      "addToPlaylist": "Add to Playlist"
+    }
+  },
+  "playlistManager": {
+    "title": "Playlist Management",
+    "empty": "Playlist is empty",
+    "emptyDescription": "Please add audio files to the playlist first",
+    "playbackRate": "Playback Speed",
+    "playMode": "Play Mode",
+    "actions": {
+      "clear": "Clear List",
+      "shuffle": "Shuffle"
+    }
+  },
+  "playbackControls": {
+    "title": "Playback Controls",
+    "playbackRate": "Playback Speed"
+  },
+  "playModes": {
+    "single": {
+      "label": "Single Track",
+      "description": "Stop after playing the current audio"
+    },
+    "sequential": {
+      "label": "Sequential",
+      "description": "Play all audio files in order, then stop"
+    },
+    "loop": {
+      "label": "Loop All",
+      "description": "Repeat the entire playlist"
+    },
+    "random": {
+      "label": "Shuffle",
+      "description": "Play audio files in random order"
+    }
+  },
+  "playModeDescription": {
+    "title": "Play Mode Description",
+    "description": "Choose different play modes to control audio playback order"
+  },
+  "common": {
+    "play": "Play",
+    "pause": "Pause",
+    "stop": "Stop",
+    "reset": "Reset",
+    "previous": "Previous",
+    "next": "Next",
+    "remove": "Remove",
+    "moveUp": "Move Up",
+    "moveDown": "Move Down",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  }
+}
