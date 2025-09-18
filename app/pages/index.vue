@@ -128,6 +128,14 @@ const randomPlayHistory = ref<number[]>([]) // 随机播放历史记录
 
 // DOM 引用
 const audioElement = ref<HTMLAudioElement>()
+
+// 初始化缓存功能（自动初始化）
+usePlaylistCache({
+  audioFiles,
+  playlist,
+  currentPlayingIndex
+})
+
 const previewAudioElement = ref<HTMLAudioElement>()
 
 // 计算属性

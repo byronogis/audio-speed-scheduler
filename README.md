@@ -13,7 +13,14 @@ A powerful audio playlist management tool that supports setting different playba
 - **File Preview**: Preview audio file information and independent playback after upload
 - **Independent Preview**: File preview playback is completely independent from playlist playback
 
-### 📋 Playlist Management
+### � Smart Caching System
+- **Audio File Caching**: Use IndexedDB to store audio files, support large files and offline access
+- **Playlist Persistence**: Use localStorage to save playlist and playback state
+- **Auto-sync**: Automatically monitor data changes and update cache
+- **Smart Recovery**: Automatically restore cached data on page load with data validation
+- **Selective Clear**: Support clearing specific types of cache or all cache data
+
+### �📋 Playlist Management
 - **Add Items**: Add audio files to the playlist
 - **Speed Control**: Set individual playback speed for each playlist item (0.5x - 3.0x)
 - **Item Sorting**: Support moving playlist items up and down to adjust playback order
