@@ -9,7 +9,7 @@ export default defineNuxtConfig({
   i18n: {
     locales: [
       { code: 'en', name: 'English', language: 'en-US', file: 'en.json' },
-      { code: 'zh_cn', name: 'Chinese', language: 'zh-Hans', file: 'zh.json' },
+      { code: 'zh_cn', name: '简体中文', language: 'zh-Hans', file: 'zh.json' },
     ],
     defaultLocale: 'en',
     strategy: 'prefix_except_default',
