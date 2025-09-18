@@ -2,7 +2,7 @@ import { ref, computed, watch, readonly, type Ref } from 'vue'
 import { createStorage } from 'unstorage'
 import localStorageDriver from 'unstorage/drivers/localstorage'
 import indexedDBDriver from 'unstorage/drivers/indexedb'
-import type { AudioFile, PlaylistItem } from '~/utils/audio'
+import type { AudioFile, PlaylistItem, PlayMode } from '~/utils/audio'
 
 /**
  * IndexedDB 存储的音频文件接口
@@ -20,6 +20,7 @@ type StoredAudioFile = Omit<AudioFile, 'url' | 'file'> & {
 interface PlaylistCacheData {
   playlist: PlaylistItem[]
   currentPlayingIndex: number
+  playMode: PlayMode
 }
 
 /**
@@ -29,6 +30,7 @@ interface UsePlaylistCacheOptions {
   audioFiles: Ref<AudioFile[]>
   playlist: Ref<PlaylistItem[]>
   currentPlayingIndex: Ref<number>
+  playMode: Ref<PlayMode>
 }
 
 /**
@@ -55,7 +57,7 @@ const playlistStorage = createStorage({
 })
 
 export function usePlaylistCache(options: UsePlaylistCacheOptions) {
-  const { audioFiles, playlist, currentPlayingIndex } = options
+  const { audioFiles, playlist, currentPlayingIndex, playMode } = options
 
   // 缓存状态
   const isLoading = ref(false)
@@ -142,15 +144,16 @@ export function usePlaylistCache(options: UsePlaylistCacheOptions) {
   /**
    * 保存播放列表数据到 localStorage
    */
-  const savePlaylistData = async (playlistData: PlaylistItem[], playingIndex: number) => {
+  const savePlaylistData = async (playlistData: PlaylistItem[], playingIndex: number, currentPlayMode: PlayMode) => {
     try {
       const data: PlaylistCacheData = {
         playlist: playlistData,
-        currentPlayingIndex: playingIndex
+        currentPlayingIndex: playingIndex,
+        playMode: currentPlayMode
       }
 
       await playlistStorage.setItem(PLAYLIST_KEY, data)
-      console.log('✅ 播放列表已保存到缓存')
+      console.log('✅ 播放列表和播放模式已保存到缓存')
     } catch (error) {
       console.error('❌ 保存播放列表到缓存失败:', error)
     }
@@ -234,6 +237,11 @@ export function usePlaylistCache(options: UsePlaylistCacheOptions) {
 
         playlist.value = validPlaylistItems
 
+        // 恢复播放模式
+        if (cachedPlaylistData.playMode) {
+          playMode.value = cachedPlaylistData.playMode
+        }
+
         // 验证当前播放索引
         if (cachedPlaylistData.currentPlayingIndex >= 0 &&
             cachedPlaylistData.currentPlayingIndex < validPlaylistItems.length) {
@@ -263,12 +271,12 @@ export function usePlaylistCache(options: UsePlaylistCacheOptions) {
     { deep: true }
   )
 
-  // 监听播放列表变化，自动保存到缓存
+  // 监听播放列表和播放模式变化，自动保存到缓存
   watch(
-    [playlist, currentPlayingIndex],
-    async ([newPlaylist, newIndex]) => {
+    [playlist, currentPlayingIndex, playMode],
+    async ([newPlaylist, newIndex, newPlayMode]) => {
       if (isInitialized.value) {
-        await savePlaylistData(newPlaylist, newIndex)
+        await savePlaylistData(newPlaylist, newIndex, newPlayMode)
       }
     },
     { deep: true }
@@ -307,6 +315,6 @@ export function usePlaylistCache(options: UsePlaylistCacheOptions) {
 
     // 手动保存方法（通常不需要，因为有自动监听）
     saveAudioFiles: () => saveAudioFiles(audioFiles.value),
-    savePlaylistData: () => savePlaylistData(playlist.value, currentPlayingIndex.value)
+    savePlaylistData: () => savePlaylistData(playlist.value, currentPlayingIndex.value, playMode.value)
   }
 }

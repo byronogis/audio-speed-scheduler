@@ -133,7 +133,8 @@ const audioElement = ref<HTMLAudioElement>()
 usePlaylistCache({
   audioFiles,
   playlist,
-  currentPlayingIndex
+  currentPlayingIndex,
+  playMode,
 })
 
 const previewAudioElement = ref<HTMLAudioElement>()
