@@ -9,9 +9,9 @@
 
     <div class="space-y-4">
       <!-- 当前播放信息 -->
-      <div v-if="currentPlayingItem" class="text-center">
+      <div v-if="currentPlayingItem && currentAudioFile" class="text-center">
         <p class="font-medium text-gray-900 dark:text-white">
-          {{ currentPlayingItem.audioFile.name }}
+          {{ currentAudioFile.name }}
         </p>
         <div class="flex items-center justify-center gap-4 mt-1">
           <p class="text-sm text-gray-500">
@@ -60,12 +60,14 @@
 </template>
 
 <script setup lang="ts">
-import type { PlaylistItem, PlayMode } from '~/types/audio'
+import type { PlaylistItem, PlayMode, AudioFile } from '~/utils/audio'
+import { getAudioFileById } from '~/utils/audio'
 import AudioProgressBar from './AudioProgressBar.vue'
 
 // Props
 interface Props {
   playlist: PlaylistItem[]
+  audioFiles: AudioFile[]  // 新增：音频文件数组
   currentPlayingItem: PlaylistItem | null
   playMode: PlayMode
   isPlaying: boolean
@@ -77,6 +79,12 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+
+// 根据 audioFileId 获取对应的 AudioFile
+const currentAudioFile = computed(() => {
+  if (!props.currentPlayingItem) return null
+  return getAudioFileById(props.currentPlayingItem.audioFileId, props.audioFiles)
+})
 
 // Emits
 const emit = defineEmits<{

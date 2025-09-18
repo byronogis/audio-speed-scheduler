@@ -136,7 +136,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AudioFile } from '~/types/audio'
+import type { AudioFile } from '~/utils/audio'
 import AudioProgressBar from './AudioProgressBar.vue'
 
 // Props

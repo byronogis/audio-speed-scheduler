@@ -36,6 +36,7 @@
           <PlaylistManager
             v-model:play-mode="playMode"
             :playlist="playlist"
+            :audio-files="audioFiles"
             :current-playing-index="currentPlayingIndex"
             @adjust-playback-rate="adjustPlaybackRate"
             @update-playback-rate="updatePlaybackRate"
@@ -47,6 +48,7 @@
 
           <PlaybackControls
             :playlist="playlist"
+            :audio-files="audioFiles"
             :current-playing-item="currentPlayingItem ?? null"
             :play-mode="playMode"
             :is-playing="isPlaying"
@@ -97,8 +99,8 @@
 </template>
 
 <script setup lang="ts">
-import type { AudioFile, PlaylistItem, PlayMode } from '~/types/audio'
-import { PlayMode as PlayModeEnum } from '~/types/audio'
+import type { AudioFile, PlaylistItem, PlayMode } from '~/utils/audio'
+import { PlayMode as PlayModeEnum, getAudioFileById } from '~/utils/audio'
 import AudioFileManager from '~/components/AudioFileManager.vue'
 import PlaylistManager from '~/components/PlaylistManager.vue'
 import PlaybackControls from '~/components/PlaybackControls.vue'
@@ -161,7 +163,7 @@ const onFileRemoved = (fileId: string) => {
       audioFiles.value.splice(fileIndex, 1)
 
       // 从播放列表中移除相关项目
-      playlist.value = playlist.value.filter(item => item.audioFile.id !== fileId)
+      playlist.value = playlist.value.filter(item => item.audioFileId !== fileId)
     }
   }
 }
@@ -170,7 +172,7 @@ const onFileRemoved = (fileId: string) => {
 const addToPlaylist = (audioFile: AudioFile) => {
   const playlistItem: PlaylistItem = {
     id: generateId(),
-    audioFile: audioFile,
+    audioFileId: audioFile.id,
     playbackRate: 1.0
   }
   playlist.value.push(playlistItem)
@@ -381,10 +383,16 @@ const togglePlayback = () => {
 
     const currentItem = currentPlayingItem.value
     if (currentItem) {
+      const currentAudioFile = getAudioFileById(currentItem.audioFileId, audioFiles.value)
+      if (!currentAudioFile) {
+        console.warn('找不到对应的音频文件:', currentItem.audioFileId)
+        return
+      }
+
       // 检查是否需要设置新的音频源
-      if (audioElement.value.src !== currentItem.audioFile.url) {
+      if (audioElement.value.src !== currentAudioFile.url) {
         // 需要切换到新的音频文件
-        audioElement.value.src = currentItem.audioFile.url
+        audioElement.value.src = currentAudioFile.url
         audioElement.value.playbackRate = currentItem.playbackRate
       } else {
         // 同一个文件，只需要确保播放速度正确
@@ -445,6 +453,12 @@ const previousTrack = () => {
   if (isPlaying.value) {
     const currentItem = currentPlayingItem.value
     if (currentItem && audioElement.value) {
+      const currentAudioFile = getAudioFileById(currentItem.audioFileId, audioFiles.value)
+      if (!currentAudioFile) {
+        console.warn('找不到对应的音频文件:', currentItem.audioFileId)
+        return
+      }
+
       // 停止预览
       if (previewAudioElement.value) {
         previewAudioElement.value.pause()
@@ -452,7 +466,7 @@ const previousTrack = () => {
       currentPreview.value = null
       previewStarted.value = false
 
-      audioElement.value.src = currentItem.audioFile.url
+      audioElement.value.src = currentAudioFile.url
       audioElement.value.playbackRate = currentItem.playbackRate
       audioElement.value.play()
     }
@@ -491,6 +505,12 @@ const nextTrackInternal = (autoPlay: boolean = false) => {
   if (autoPlay || isPlaying.value) {
     const currentItem = currentPlayingItem.value
     if (currentItem && audioElement.value) {
+      const currentAudioFile = getAudioFileById(currentItem.audioFileId, audioFiles.value)
+      if (!currentAudioFile) {
+        console.warn('找不到对应的音频文件:', currentItem.audioFileId)
+        return
+      }
+
       // 停止预览
       if (previewAudioElement.value) {
         previewAudioElement.value.pause()
@@ -498,7 +518,7 @@ const nextTrackInternal = (autoPlay: boolean = false) => {
       currentPreview.value = null
       previewStarted.value = false
 
-      audioElement.value.src = currentItem.audioFile.url
+      audioElement.value.src = currentAudioFile.url
       audioElement.value.playbackRate = currentItem.playbackRate
       audioElement.value.play()
     }

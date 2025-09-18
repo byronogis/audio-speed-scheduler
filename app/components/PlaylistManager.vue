@@ -41,7 +41,7 @@
 
           <div class="flex-1 min-w-0">
             <p class="font-medium text-gray-900 dark:text-white truncate">
-              {{ item.audioFile.name }}
+              {{ getAudioFileById(item.audioFileId, props.audioFiles)?.name || '未知文件' }}
             </p>
           </div>
 
@@ -107,15 +107,16 @@
 </template>
 
 <script setup lang="ts">
-import type { PlaylistItem, PlayMode } from '~/types/audio'
+import type { PlaylistItem, PlayMode, AudioFile } from '~/utils/audio'
+import { getAudioFileById } from '~/utils/audio'
 
-// Props
 interface Props {
   playlist: PlaylistItem[]
+  audioFiles: AudioFile[]
   currentPlayingIndex: number
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
 
 // Emits
 defineEmits<{

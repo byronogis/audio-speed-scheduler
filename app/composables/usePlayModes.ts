@@ -1,5 +1,5 @@
-import type { PlayModeOption, PlayMode } from '~/types/audio'
-import { PlayMode as PlayModeEnum } from '~/types/audio'
+import type { PlayModeOption, PlayMode } from '~/utils/audio'
+import { PlayMode as PlayModeEnum } from '~/utils/audio'
 
 /**
  * 播放模式 composable
