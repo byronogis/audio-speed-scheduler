@@ -1,5 +1,5 @@
 {
-  "name": "nuxt-app",
+  "name": "audio-speed-scheduler",
   "private": true,
   "type": "module",
   "scripts": {

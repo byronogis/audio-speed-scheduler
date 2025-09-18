@@ -235,4 +235,4 @@ MIT License
 
 ---
 
-© 2025 音频速度编排工具. All rights reserved.
+© 2025 Byron[https://github.com/byronogis]. All rights reserved.
