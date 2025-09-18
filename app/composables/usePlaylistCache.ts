@@ -35,19 +35,23 @@ interface UsePlaylistCacheOptions {
  * 创建音频文件存储实例
  */
 const audioStorage = createStorage({
-  driver: indexedDBDriver({
-    dbName: 'AudioSpeedScheduler',
-    storeName: 'audioFiles'
-  })
+  driver: import.meta.client
+    ? indexedDBDriver({
+      dbName: 'AudioSpeedScheduler',
+      storeName: 'audioFiles'
+    })
+    : undefined
 })
 
 /**
  * 创建播放列表存储实例
  */
 const playlistStorage = createStorage({
-  driver: localStorageDriver({
-    base: 'audio-speed-scheduler:'
-  })
+  driver: import.meta.client
+    ? localStorageDriver({
+      base: 'audio-speed-scheduler:'
+    })
+    : undefined
 })
 
 export function usePlaylistCache(options: UsePlaylistCacheOptions) {
