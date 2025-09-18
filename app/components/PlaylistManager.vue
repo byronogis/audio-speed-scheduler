@@ -7,7 +7,6 @@
           <h2 class="text-xl font-semibold">{{ $t('playlistManager.title') }}</h2>
         </div>
         <div class="flex items-center gap-3">
-          <span class="text-sm text-gray-600 dark:text-gray-400">{{ $t('playlistManager.playMode') }}:</span>
           <USelect
             v-model="playMode"
             :items="playModeOptions"
@@ -34,7 +33,7 @@
           v-for="(item, index) in playlist"
           :key="item.id"
           class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
-          :class="{ 'ring-2 ring-primary': currentPlayingIndex === index }"
+          :class="{ 'inset-ring-2 inset-ring-primary': currentPlayingIndex === index }"
         >
           <div class="flex items-center gap-2 text-sm text-gray-500">
             {{ index + 1 }}
@@ -44,41 +43,19 @@
             <p class="font-medium text-gray-900 dark:text-white truncate">
               {{ item.audioFile.name }}
             </p>
-            <div class="flex items-center gap-4 mt-1">
-              <span class="text-sm text-gray-500">
-                {{ $t('playlistManager.playbackRate') }}: {{ item.playbackRate }}x
-              </span>
-            </div>
           </div>
 
           <div class="flex items-center gap-2">
             <!-- 播放速度调节 -->
-            <div class="flex items-center gap-2">
-              <UButton
-                icon="i-lucide-minus"
-                variant="ghost"
-                size="sm"
-                :disabled="item.playbackRate <= 0.5"
-                @click="$emit('adjustPlaybackRate', item.id, -0.1)"
-              />
-              <UInput
-                :model-value="item.playbackRate"
-                type="number"
-                step="0.1"
-                min="0.5"
-                max="3.0"
-                size="sm"
-                class="w-20"
-                @update:model-value="(value) => $emit('updatePlaybackRate', item.id, value)"
-              />
-              <UButton
-                icon="i-lucide-plus"
-                variant="ghost"
-                size="sm"
-                :disabled="item.playbackRate >= 3.0"
-                @click="$emit('adjustPlaybackRate', item.id, 0.1)"
-              />
-            </div>
+            <UInputNumber
+              :model-value="item.playbackRate"
+              :step="0.1"
+              :min="0.5"
+              :max="3.0"
+              size="sm"
+              class="w-22"
+              @update:model-value="(value) => $emit('updatePlaybackRate', item.id, value)"
+            />
 
             <!-- 移动按钮 -->
             <UButton
