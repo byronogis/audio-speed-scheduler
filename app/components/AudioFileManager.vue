@@ -103,10 +103,12 @@
                   icon="i-lucide-plus"
                   variant="outline"
                   size="sm"
+                  :label="$t('audioFileManager.fileList.addToPlaylist')"
+                  :ui="{
+                    label: 'hidden sm:block'
+                  }"
                   @click="$emit('addToPlaylist', file)"
-                >
-                  {{ $t('audioFileManager.fileList.addToPlaylist') }}
-                </UButton>
+                />
                 <UButton
                   icon="i-lucide-trash-2"
                   variant="ghost"

@@ -32,7 +32,7 @@
         <div
           v-for="(item, index) in playlist"
           :key="item.id"
-          class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+          class="grid grid-cols-[auto_1fr] md:grid-cols-[auto_1fr_auto] items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
           :class="{ 'inset-ring-2 inset-ring-primary': currentPlayingIndex === index }"
         >
           <div class="flex items-center gap-2 text-sm text-gray-500">
@@ -45,7 +45,7 @@
             </p>
           </div>
 
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 col-span-2 md:col-span-1 justify-end">
             <!-- 播放速度调节 -->
             <UInputNumber
               :model-value="item.playbackRate"
