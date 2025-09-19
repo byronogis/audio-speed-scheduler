@@ -1,62 +1,86 @@
 <template>
-  <UCard v-if="playlist.length > 0">
-    <template #header>
-      <div class="flex items-center gap-2">
-        <UIcon name="i-lucide-play-circle" class="text-primary" />
-        <h2 class="text-xl font-semibold">{{ $t('playbackControls.title') }}</h2>
-      </div>
-    </template>
+  <!-- 播放控制栏 -->
+  <div
+    v-if="playlist.length > 0 && currentPlayingItem && currentAudioFile"
+    class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
+  >
+    <!-- 展开内容 -->
+    <UCollapsible v-model:open="isExpanded">
+      <template #content>
+        <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+          <!-- 进度条 -->
+          <div class="mb-3">
+            <AudioProgressBar
+              :current-time="currentTime"
+              :duration="duration"
+              @seek-to="onProgressChange"
+            />
+          </div>
 
-    <div class="space-y-4">
-      <!-- 当前播放信息 -->
-      <div v-if="currentPlayingItem && currentAudioFile" class="text-center">
-        <p class="font-medium text-gray-900 dark:text-white">
-          {{ currentAudioFile.name }}
-        </p>
-        <div class="flex items-center justify-center gap-4 mt-1">
-          <p class="text-sm text-gray-500">
-            {{ $t('playbackControls.playbackRate') }}: {{ currentPlayingItem.playbackRate }}x
-          </p>
-          <div class="flex items-center gap-1">
-            <UIcon :name="getPlayModeIcon(props.playMode)" class="text-primary text-sm" />
-            <span class="text-sm text-gray-500">
-              {{ getPlayModeLabel(props.playMode) }}
-            </span>
+          <!-- 详细信息 -->
+          <div class="flex items-center justify-between text-sm">
+            <div class="flex items-center gap-1">
+              <UIcon :name="getPlayModeIcon(props.playMode)" class="text-primary" />
+              <span class="text-gray-600 dark:text-gray-400">
+                {{ getPlayModeLabel(props.playMode) }}
+              </span>
+            </div>
+            <div class="text-gray-600 dark:text-gray-400">
+              {{ $t('playbackControls.playbackRate') }}: {{ currentPlayingItem.playbackRate }}x
+            </div>
           </div>
         </div>
-      </div>
+      </template>
+    </UCollapsible>
 
-      <!-- 进度条 -->
-      <div v-if="currentPlayingItem">
-        <AudioProgressBar
-          :current-time="currentTime"
-          :duration="duration"
-          @seek-to="onProgressChange"
-        />
-      </div>
+    <!-- 主控制行 (始终显示) -->
+    <div class="px-4 py-3">
+      <div class="flex items-center gap-3">
+        <!-- 左侧：播放信息 -->
+        <div class="flex-1 min-w-0 flex items-center gap-3">
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-gray-900 dark:text-white truncate text-sm">
+              {{ currentAudioFile.name }}
+            </p>
+          </div>
+        </div>
 
-      <!-- 播放控制按钮 -->
-      <div class="flex items-center justify-center gap-3">
-        <UButton
-          icon="i-lucide-skip-back"
-          variant="outline"
-          :disabled="!canGoPrevious"
-          @click="$emit('previousTrack')"
-        />
-        <UButton
-          :icon="isPlaying ? 'i-lucide-pause' : 'i-lucide-play'"
-          size="lg"
-          @click="$emit('togglePlayback')"
-        />
-        <UButton
-          icon="i-lucide-skip-forward"
-          variant="outline"
-          :disabled="!canGoNext"
-          @click="$emit('nextTrack')"
-        />
+        <!-- 中间：播放控制 -->
+        <div class="flex items-center gap-2">
+          <UButton
+            icon="i-lucide-skip-back"
+            variant="ghost"
+            size="sm"
+            :disabled="!canGoPrevious"
+            @click="$emit('previousTrack')"
+          />
+          <UButton
+            :icon="isPlaying ? 'i-lucide-pause' : 'i-lucide-play'"
+            @click="$emit('togglePlayback')"
+          />
+          <UButton
+            icon="i-lucide-skip-forward"
+            variant="ghost"
+            size="sm"
+            :disabled="!canGoNext"
+            @click="$emit('nextTrack')"
+          />
+        </div>
+
+        <!-- 右侧：展开按钮 (位置始终固定) -->
+        <div class="flex-shrink-0">
+          <UButton
+            icon="i-lucide-chevron-up"
+            variant="ghost"
+            size="sm"
+            class="transition-transform duration-200"
+            :class="{ 'rotate-180': isExpanded }"
+            @click="toggleExpanded"
+          />
+        </div>
       </div>
     </div>
-  </UCard>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -67,7 +91,7 @@ import AudioProgressBar from './AudioProgressBar.vue'
 // Props
 interface Props {
   playlist: PlaylistItem[]
-  audioFiles: AudioFile[]  // 新增：音频文件数组
+  audioFiles: AudioFile[]
   currentPlayingItem: PlaylistItem | null
   playMode: PlayMode
   isPlaying: boolean
@@ -79,6 +103,14 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+
+// 展开状态
+const isExpanded = ref(false)
+
+// 切换展开状态
+const toggleExpanded = () => {
+  isExpanded.value = !isExpanded.value
+}
 
 // 根据 audioFileId 获取对应的 AudioFile
 const currentAudioFile = computed(() => {
@@ -95,7 +127,6 @@ const emit = defineEmits<{
 }>()
 
 const { getPlayModeIcon, getPlayModeLabel } = usePlayModes()
-
 
 // 进度条处理方法
 const onProgressChange = (value: number | undefined) => {

@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-    <div class="container mx-auto p-6">
+    <div class="container mx-auto p-6 pb-32">
       <!-- Header -->
       <div class="text-center mb-8">
         <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-2">
@@ -45,7 +45,24 @@
             @clear-playlist="clearPlaylist"
             @shuffle-playlist="shufflePlaylist"
           />
+        </div>
+      </div>
 
+      <!-- 播放模式说明 -->
+      <PlayModeDescription />
+
+      <!-- 页面底部 - 语言切换器 -->
+      <div class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+        <div class="flex justify-center">
+          <LanguageSwitcher />
+        </div>
+      </div>
+    </div>
+
+    <!-- 浮动播放控制栏 -->
+    <div class="fixed bottom-4 left-4 right-4 z-50">
+      <div class="max-w-4xl mx-auto">
+        <div class="rounded-lg shadow-lg overflow-hidden">
           <PlaybackControls
             :playlist="playlist"
             :audio-files="audioFiles"
@@ -62,16 +79,6 @@
             @next-track="nextTrack"
             @seek-to="seekTo"
           />
-        </div>
-      </div>
-
-      <!-- 播放模式说明 -->
-      <PlayModeDescription />
-
-      <!-- 页面底部 - 语言切换器 -->
-      <div class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
-        <div class="flex justify-center">
-          <LanguageSwitcher />
         </div>
       </div>
     </div>
