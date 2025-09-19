@@ -42,6 +42,9 @@
             <p class="font-medium text-gray-900 dark:text-white truncate text-sm">
               {{ currentAudioFile.name }}
             </p>
+            <p class="text-xs text-gray-500">
+              {{ $t('playbackControls.playbackRate') }}: {{ currentPlayingItem.playbackRate }}x
+            </p>
           </div>
         </div>
 
