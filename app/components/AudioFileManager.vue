@@ -43,7 +43,7 @@
             class="space-y-0"
           >
             <!-- 文件信息行 -->
-            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800" :class="isSpeedConfigExpanded(file.id) ? 'rounded-t-lg' : 'rounded-lg'">
+            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800" :class="getFileInfoRowClass(file)">
               <div class="flex items-center gap-3 flex-1">
                 <UIcon name="i-lucide-music" class="text-primary" />
                 <div class="flex-1 min-w-0">
@@ -129,7 +129,7 @@
             <!-- 批量添加控制行 - 使用 UCollapsible -->
             <UCollapsible :open="isSpeedConfigExpanded(file.id)">
               <template #content>
-                <div class="flex flex-col gap-2 px-3 py-3 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 rounded-b-lg">
+                <div class="flex flex-col gap-2 px-3 py-3 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700" :class="getSpeedConfigClass(file)">
                   <label class="text-xs text-gray-600 dark:text-gray-400">
                     {{ $t('audioFileManager.fileList.speedInputLabel') }}
                   </label>
@@ -152,7 +152,7 @@
             <!-- 预览进度条 - 显示在正在预览的文件下方 -->
             <div
               v-if="currentPreview?.id === file.id && previewStarted"
-              class="px-3 pt-2"
+              class="px-3 py-2 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 rounded-b-lg"
             >
               <AudioProgressBar
                 :current-time="previewCurrentTime"
@@ -215,6 +215,31 @@ const isSpeedConfigExpanded = (fileId: string): boolean => {
 
 const toggleSpeedConfig = (fileId: string) => {
   expandedSpeedConfigs.value[fileId] = !isSpeedConfigExpanded(fileId)
+}
+
+// 获取文件信息行的样式类
+const getFileInfoRowClass = (file: AudioFile): string => {
+  const isExpanded = isSpeedConfigExpanded(file.id)
+  const hasPreview = props.currentPreview?.id === file.id && props.previewStarted
+
+  if (isExpanded) {
+    return 'rounded-t-lg'
+  } else if (hasPreview) {
+    return 'rounded-t-lg'
+  } else {
+    return 'rounded-lg'
+  }
+}
+
+// 获取速度配置区域的样式类
+const getSpeedConfigClass = (file: AudioFile): string => {
+  const hasPreview = props.currentPreview?.id === file.id && props.previewStarted
+
+  if (hasPreview) {
+    return '' // 如果有预览，速度配置区域不需要底部圆角
+  } else {
+    return 'rounded-b-lg'
+  }
 }
 
 // 批量添加相关方法
