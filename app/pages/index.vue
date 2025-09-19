@@ -125,6 +125,7 @@ const previewCurrentTime = ref(0)
 const previewDuration = ref(0)
 
 const randomPlayHistory = ref<number[]>([]) // 随机播放历史记录
+const shouldRestoreTime = ref(true) // 是否应该恢复播放时间（只在首次加载时）
 
 // DOM 引用
 const audioElement = ref<HTMLAudioElement>()
@@ -135,6 +136,7 @@ usePlaylistCache({
   playlist,
   currentPlayingIndex,
   playMode,
+  currentTime,
 })
 
 const previewAudioElement = ref<HTMLAudioElement>()
@@ -439,6 +441,10 @@ const stopAudio = () => {
 const previousTrack = () => {
   if (playlist.value.length === 0) return
 
+  // 手动切换歌曲时，重置时间恢复标志
+  shouldRestoreTime.value = false
+  currentTime.value = 0
+
   if (playMode.value === PlayModeEnum.RANDOM) {
     // 随机模式：从历史记录中获取上一首
     if (randomPlayHistory.value.length > 1) {
@@ -488,6 +494,12 @@ const nextTrack = () => {
 
 const nextTrackInternal = (autoPlay: boolean = false) => {
   if (playlist.value.length === 0) return
+
+  // 手动切换歌曲时，重置时间恢复标志
+  if (!autoPlay) {
+    shouldRestoreTime.value = false
+    currentTime.value = 0
+  }
 
   if (playMode.value === PlayModeEnum.RANDOM) {
     getRandomTrackIndex()
@@ -559,6 +571,12 @@ const getRandomTrackIndex = () => {
 const onAudioLoaded = () => {
   if (audioElement.value) {
     duration.value = audioElement.value.duration || 0
+
+    // 如果有缓存的播放时间且应该恢复时间，恢复到该位置
+    if (shouldRestoreTime.value && currentTime.value > 0 && currentTime.value < duration.value) {
+      audioElement.value.currentTime = currentTime.value
+      shouldRestoreTime.value = false // 只恢复一次
+    }
   }
 }
 
