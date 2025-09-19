@@ -11,7 +11,11 @@
     },
     "fileList": {
       "title": "已上传的音频文件",
-      "addToPlaylist": "添加到播放列表"
+      "addToPlaylist": "添加到播放列表",
+      "speedInputLabel": "播放速度 (例如: 1.0, 1.5, 2.0)",
+      "speedInputPlaceholder": "输入速度值...",
+      "willAdd": "将添加 {count} 项到播放列表",
+      "noValidSpeeds": "输入有效速度值 (0.5-3.0) 以启用批量添加"
     }
   },
   "playlistManager": {

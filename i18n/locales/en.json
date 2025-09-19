@@ -11,7 +11,11 @@
     },
     "fileList": {
       "title": "Uploaded Audio Files",
-      "addToPlaylist": "Add to Playlist"
+      "addToPlaylist": "Add to Playlist",
+      "speedInputLabel": "Playback Speeds (e.g., 1.0, 1.5, 2.0)",
+      "speedInputPlaceholder": "Enter speed values...",
+      "willAdd": "Will add {count} copies to playlist",
+      "noValidSpeeds": "Enter valid speeds (0.5-3.0) to enable batch add"
     }
   },
   "playlistManager": {

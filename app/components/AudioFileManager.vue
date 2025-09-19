@@ -36,13 +36,14 @@
       <!-- 已上传的音频文件列表 -->
       <div v-if="audioFiles.length > 0" class="space-y-2">
         <h3 class="font-semibold text-gray-900 dark:text-white">{{ $t('audioFileManager.fileList.title') }}</h3>
-        <div class="space-y-2 max-h-60 overflow-y-auto">
+        <div class="space-y-3 max-h-60 overflow-y-auto">
           <div
             v-for="file in audioFiles"
             :key="file.id"
-            class="space-y-2"
+            class="space-y-0"
           >
-            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <!-- 文件信息行 -->
+            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800" :class="isSpeedConfigExpanded(file.id) ? 'rounded-t-lg' : 'rounded-lg'">
               <div class="flex items-center gap-3 flex-1">
                 <UIcon name="i-lucide-music" class="text-primary" />
                 <div class="flex-1 min-w-0">
@@ -107,7 +108,7 @@
                   :ui="{
                     label: 'hidden sm:block'
                   }"
-                  @click="$emit('addToPlaylist', file)"
+                  @click="handleAddToPlaylist(file)"
                 />
                 <UButton
                   icon="i-lucide-trash-2"
@@ -116,13 +117,42 @@
                   size="sm"
                   @click="removeFile(file.id)"
                 />
+                <UButton
+                  :icon="isSpeedConfigExpanded(file.id) ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
+                  variant="ghost"
+                  size="sm"
+                  @click="toggleSpeedConfig(file.id)"
+                />
               </div>
             </div>
+
+            <!-- 批量添加控制行 - 使用 UCollapsible -->
+            <UCollapsible :open="isSpeedConfigExpanded(file.id)">
+              <template #content>
+                <div class="flex flex-col gap-2 px-3 py-3 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 rounded-b-lg">
+                  <label class="text-xs text-gray-600 dark:text-gray-400">
+                    {{ $t('audioFileManager.fileList.speedInputLabel') }}
+                  </label>
+                  <UInputTags
+                    :model-value="getBatchSpeedTags(file.id)"
+                    :placeholder="$t('audioFileManager.fileList.speedInputPlaceholder')"
+                    size="sm"
+                    @update:model-value="setBatchSpeedTags(file.id, $event)"
+                  />
+                  <div v-if="getBatchSpeeds(file.id).length > 0" class="text-xs text-green-600 dark:text-green-400">
+                    {{ $t('audioFileManager.fileList.willAdd', { count: getBatchSpeeds(file.id).length }) }}
+                  </div>
+                  <div v-else class="text-xs text-gray-500">
+                    {{ $t('audioFileManager.fileList.noValidSpeeds') }}
+                  </div>
+                </div>
+              </template>
+            </UCollapsible>
 
             <!-- 预览进度条 - 显示在正在预览的文件下方 -->
             <div
               v-if="currentPreview?.id === file.id && previewStarted"
-              class="ml-9 px-3"
+              class="px-3 pt-2"
             >
               <AudioProgressBar
                 :current-time="previewCurrentTime"
@@ -151,7 +181,7 @@ interface Props {
   previewDuration: number
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
 
 // Emits
 const emit = defineEmits<{
@@ -160,12 +190,99 @@ const emit = defineEmits<{
   preview: [file: AudioFile]
   pausePreview: []
   resetPreview: []
-  addToPlaylist: [file: AudioFile]
+  addToPlaylist: [items: { audioFile: AudioFile, playbackRate: number }[]]
   previewSeekTo: [time: number]
 }>()
 
 // DOM 引用
 const fileInput = ref<HTMLInputElement>()
+
+// 批量操作状态 - 每个文件的速度标签
+const batchSpeedTags = ref<Record<string, string[]>>({})
+
+// 展开/折叠状态
+const expandedSpeedConfigs = ref<Record<string, boolean>>({})
+
+// 预设常用速度值
+const getDefaultSpeedTags = (): string[] => {
+  return ['1.0']
+}
+
+// 展开/折叠相关方法
+const isSpeedConfigExpanded = (fileId: string): boolean => {
+  return expandedSpeedConfigs.value[fileId] || false
+}
+
+const toggleSpeedConfig = (fileId: string) => {
+  expandedSpeedConfigs.value[fileId] = !isSpeedConfigExpanded(fileId)
+}
+
+// 批量添加相关方法
+const getBatchSpeedTags = (fileId: string): string[] => {
+  if (!batchSpeedTags.value[fileId]) {
+    // 首次获取时设置默认值
+    batchSpeedTags.value[fileId] = getDefaultSpeedTags()
+  }
+  return batchSpeedTags.value[fileId] || []
+}
+
+const setBatchSpeedTags = (fileId: string, tags: string[]) => {
+  batchSpeedTags.value[fileId] = tags
+}
+
+const getBatchSpeeds = (fileId: string): number[] => {
+  const tags = getBatchSpeedTags(fileId)
+  const speeds: number[] = []
+
+  tags.forEach(tag => {
+    const speed = parseFloat(tag)
+    if (!isNaN(speed) && speed >= 0.5 && speed <= 3.0) {
+      speeds.push(speed)
+    }
+  })
+
+  return speeds
+}
+
+const handleAddToPlaylist = (audioFile: AudioFile) => {
+  // 如果展开了速度配置且有有效速度，使用批量添加
+  if (isSpeedConfigExpanded(audioFile.id)) {
+    const speeds = getBatchSpeeds(audioFile.id)
+
+    if (speeds.length > 0) {
+      // 为每个速度创建一个播放列表项
+      const items = speeds.map(speed => ({ audioFile, playbackRate: speed }))
+      emit('addToPlaylist', items)
+      return
+    }
+  }
+
+  // 否则使用默认速度 1.0 单个添加
+  emit('addToPlaylist', [{ audioFile, playbackRate: 1.0 }])
+}
+
+// 监听 audioFiles 变化，清理无效配置
+watch(() => props.audioFiles, (newFiles) => {
+  const existingFileIds = new Set(newFiles.map(f => f.id))
+
+  // 清理不存在文件的配置
+  const newBatchSpeedTags: Record<string, string[]> = {}
+  Object.keys(batchSpeedTags.value).forEach(fileId => {
+    if (existingFileIds.has(fileId)) {
+      newBatchSpeedTags[fileId] = batchSpeedTags.value[fileId]!
+    }
+  })
+  batchSpeedTags.value = newBatchSpeedTags
+
+  // 清理展开状态
+  const newExpandedStates: Record<string, boolean> = {}
+  Object.keys(expandedSpeedConfigs.value).forEach(fileId => {
+    if (existingFileIds.has(fileId)) {
+      newExpandedStates[fileId] = expandedSpeedConfigs.value[fileId]!
+    }
+  })
+  expandedSpeedConfigs.value = newExpandedStates
+})
 
 // 文件处理方法
 const triggerFileInput = () => {

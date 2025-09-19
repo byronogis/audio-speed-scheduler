@@ -187,13 +187,13 @@ const onFileRemoved = (fileId: string) => {
 }
 
 // 播放列表管理
-const addToPlaylist = (audioFile: AudioFile) => {
-  const playlistItem: PlaylistItem = {
+const addToPlaylist = (items: { audioFile: AudioFile, playbackRate: number }[]) => {
+  const newItems: PlaylistItem[] = items.map(({ audioFile, playbackRate }) => ({
     id: generateId(),
     audioFileId: audioFile.id,
-    playbackRate: 1.0
-  }
-  playlist.value.push(playlistItem)
+    playbackRate: playbackRate
+  }))
+  playlist.value.push(...newItems)
 }
 
 const removeFromPlaylist = (itemId: string) => {
