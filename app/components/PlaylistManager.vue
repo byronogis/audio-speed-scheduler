@@ -1,12 +1,16 @@
 <template>
   <UCard>
     <template #header>
-      <div class="flex items-center justify-between">
+      <div class="space-y-3">
+        <!-- 第一行：标题 -->
         <div class="flex items-center gap-2">
           <UIcon name="i-lucide-list-music" class="text-primary" />
           <h2 class="text-xl font-semibold">{{ $t('playlistManager.title') }}</h2>
         </div>
-        <div class="flex items-center gap-3">
+        
+        <!-- 第二行：播放模式切换和功能按钮 -->
+        <div v-if="playlist.length > 0" class="flex items-center justify-between gap-3">
+          <!-- 左侧：播放模式切换 -->
           <USelect
             v-model="playMode"
             :items="playModeOptions"
@@ -14,6 +18,41 @@
             size="sm"
             class="w-32"
           />
+          
+          <!-- 右侧：功能按钮 -->
+          <div class="flex items-center gap-2">
+            <UButton
+              icon="i-lucide-play"
+              variant="outline"
+              size="sm"
+              :label="$t('playlistManager.playAll')"
+              :ui="{
+                label: 'hidden sm:block'
+              }"
+              @click="$emit('playItem', 0)"
+            />
+            <UButton
+              icon="i-lucide-shuffle"
+              variant="outline"
+              size="sm"
+              :label="$t('playlistManager.actions.shuffle')"
+              :ui="{
+                label: 'hidden sm:block'
+              }"
+              @click="$emit('shufflePlaylist')"
+            />
+            <UButton
+              icon="i-lucide-trash-2"
+              variant="outline"
+              color="error"
+              size="sm"
+              :label="$t('playlistManager.actions.clear')"
+              :ui="{
+                label: 'hidden sm:block'
+              }"
+              @click="$emit('clearPlaylist')"
+            />
+          </div>
         </div>
       </div>
     </template>
@@ -28,18 +67,8 @@
       </div>
 
       <!-- 播放列表项目 -->
-      <div v-else class="space-y-4">
-        <!-- 播放全部按钮 -->
-        <div class="flex items-center gap-2">
-          <UButton
-            icon="i-lucide-play"
-            class="flex-1"
-            @click="$emit('playItem', 0)"
-          >
-            {{ $t('playlistManager.playAll') }}
-          </UButton>
-        </div>
-
+      <!-- 播放列表项目 -->
+      <div v-else>
         <!-- 播放列表 -->
         <div class="space-y-2 max-h-96 overflow-y-auto">
         <div
@@ -104,24 +133,6 @@
           </div>
         </div>
         </div>
-      </div>
-
-      <!-- 批量操作 -->
-      <div v-if="playlist.length > 0" class="flex items-center gap-2">
-        <UButton
-          variant="outline"
-          class="flex-1"
-          @click="$emit('clearPlaylist')"
-        >
-          {{ $t('playlistManager.actions.clear') }}
-        </UButton>
-        <UButton
-          variant="outline"
-          class="flex-1"
-          @click="$emit('shufflePlaylist')"
-        >
-          {{ $t('playlistManager.actions.shuffle') }}
-        </UButton>
       </div>
     </div>
   </UCard>
