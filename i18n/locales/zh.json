@@ -24,6 +24,7 @@
     "emptyDescription": "请先添加音频文件到播放列表",
     "playbackRate": "播放速度",
     "playMode": "播放模式",
+    "playAll": "播放全部",
     "actions": {
       "clear": "清空列表",
       "shuffle": "随机排序"

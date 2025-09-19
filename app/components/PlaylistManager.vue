@@ -28,7 +28,20 @@
       </div>
 
       <!-- 播放列表项目 -->
-      <div v-else class="space-y-2 max-h-96 overflow-y-auto">
+      <div v-else class="space-y-4">
+        <!-- 播放全部按钮 -->
+        <div class="flex items-center gap-2">
+          <UButton
+            icon="i-lucide-play"
+            class="flex-1"
+            @click="$emit('playItem', 0)"
+          >
+            {{ $t('playlistManager.playAll') }}
+          </UButton>
+        </div>
+
+        <!-- 播放列表 -->
+        <div class="space-y-2 max-h-96 overflow-y-auto">
         <div
           v-for="(item, index) in playlist"
           :key="item.id"
@@ -46,6 +59,12 @@
               </p>
             </div>
             <div class="flex items-center gap-2 justify-end">
+              <UButton
+                icon="i-lucide-play"
+                variant="ghost"
+                size="sm"
+                @click="$emit('playItem', index)"
+              />
               <UButton
                 icon="i-lucide-arrow-up"
                 variant="ghost"
@@ -83,6 +102,7 @@
             <span class="text-xs text-gray-500 w-10 text-left">3.0x</span>
             <span class="ml-2 text-sm font-mono w-10 text-center">{{ item.playbackRate.toFixed(1) }}x</span>
           </div>
+        </div>
         </div>
       </div>
 
@@ -127,6 +147,7 @@ defineEmits<{
   removeItem: [itemId: string]
   clearPlaylist: []
   shufflePlaylist: []
+  playItem: [index: number]
 }>()
 
 const playMode = defineModel<PlayMode>('playMode')

@@ -24,6 +24,7 @@
     "emptyDescription": "Please add audio files to the playlist first",
     "playbackRate": "Playback Speed",
     "playMode": "Play Mode",
+    "playAll": "Play All",
     "actions": {
       "clear": "Clear List",
       "shuffle": "Shuffle"

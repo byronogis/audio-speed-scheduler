@@ -44,6 +44,7 @@
             @remove-item="removeFromPlaylist"
             @clear-playlist="clearPlaylist"
             @shuffle-playlist="shufflePlaylist"
+            @play-item="playItem"
           />
         </div>
       </div>
@@ -419,6 +420,38 @@ const togglePlayback = () => {
 
       audioElement.value.play()
     }
+  }
+}
+
+const playItem = (index: number) => {
+  if (playlist.value.length === 0 || index < 0 || index >= playlist.value.length) return
+
+  // 如果预览正在播放，停止预览
+  if (isPreviewPlaying.value && previewAudioElement.value) {
+    previewAudioElement.value.pause()
+    currentPreview.value = null
+    previewStarted.value = false
+  }
+
+  // 设置要播放的项目索引
+  currentPlayingIndex.value = index
+
+  // 获取要播放的项目
+  const itemToPlay = playlist.value[index]
+  if (!itemToPlay) return
+
+  const audioFileToPlay = getAudioFileById(itemToPlay.audioFileId, audioFiles.value)
+
+  if (!audioFileToPlay) {
+    console.warn('找不到对应的音频文件:', itemToPlay.audioFileId)
+    return
+  }
+
+  // 配置音频元素
+  if (audioElement.value) {
+    audioElement.value.src = audioFileToPlay.url
+    audioElement.value.playbackRate = itemToPlay.playbackRate
+    audioElement.value.play()
   }
 }
 
