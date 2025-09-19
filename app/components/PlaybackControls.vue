@@ -2,7 +2,7 @@
   <!-- 播放控制栏 -->
   <div
     v-if="playlist.length > 0 && currentPlayingItem && currentAudioFile"
-    class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
+    class="bg-white dark:bg-gray-900  dark:border-gray-700"
   >
     <!-- 展开内容 -->
     <UCollapsible v-model:open="isExpanded">
