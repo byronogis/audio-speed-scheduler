@@ -13,14 +13,14 @@ A powerful audio playlist management tool that supports setting different playba
 - **File Preview**: Preview audio file information and independent playback after upload
 - **Independent Preview**: File preview playback is completely independent from playlist playback
 
-### � Smart Caching System
+### 💾 Smart Caching System
 - **Audio File Caching**: Use IndexedDB to store audio files, support large files and offline access
-- **Playlist Persistence**: Use localStorage to save playlist and playback state
+- **Playlist Persistence**: Use localStorage to save playlist, playback state, play mode, and playback time
 - **Auto-sync**: Automatically monitor data changes and update cache
 - **Smart Recovery**: Automatically restore cached data on page load with data validation
 - **Selective Clear**: Support clearing specific types of cache or all cache data
 
-### �📋 Playlist Management
+### 📋 Playlist Management
 - **Add Items**: Add audio files to the playlist
 - **Speed Control**: Set individual playback speed for each playlist item (0.5x - 3.0x)
 - **Item Sorting**: Support moving playlist items up and down to adjust playback order
@@ -59,6 +59,7 @@ A powerful audio playlist management tool that supports setting different playba
 - **Internationalization**: @nuxtjs/i18n
 - **Type Checking**: TypeScript
 - **Package Manager**: PNPM
+- **Storage**: unstorage (IndexedDB + localStorage)
 
 ## Project Structure
 
@@ -72,9 +73,10 @@ app/
 │   ├── PlayModeDescription.vue # Play mode description component
 │   └── LanguageSwitcher.vue    # Language switcher component
 ├── composables/             # Composable functions
+│   ├── usePlaylistCache.ts     # Playlist caching system
 │   └── usePlayModes.ts         # Play mode related logic
-├── types/                   # Type definitions
-│   └── audio.ts                # Audio related types and enums
+├── utils/                   # Utility functions and types
+│   └── audio.ts                # Audio related types, enums and utilities
 ├── pages/
 │   └── index.vue               # Main page
 └── app.vue                     # Application root component
@@ -84,53 +86,6 @@ i18n/
     ├── zh.json                 # Simplified Chinese translations
     └── en.json                 # English translations
 ```
-
-### Modular Component Design
-
-1. **AudioFileManager** - Audio file management
-   - File upload (drag & drop/click)
-   - File list display
-   - Independent preview playback control
-   - Add to playlist
-
-2. **PlaylistManager** - Playlist management
-   - Playlist display
-   - Play mode selection
-   - Speed adjustment control
-   - Item sorting and deletion
-
-3. **PlaybackControls** - Playback control
-   - Playback status display
-   - Draggable progress bar
-   - Playback control buttons
-   - Current playing information
-
-4. **AudioProgressBar** - Progress bar component
-   - Reusable audio progress bar
-   - Support drag seeking
-   - Time display formatting
-
-5. **PlayModeDescription** - Play mode description
-   - Detailed description of each play mode
-   - Icon and description display
-
-6. **LanguageSwitcher** - Language switcher
-   - Support Chinese/English switching
-   - Dropdown selection interface
-
-### Composables Design
-
-- **usePlayModes**: Play mode related logic
-  - Play mode option configuration
-  - Icon, label, description getters
-  - Internationalization integration
-
-### Type System
-
-- **AudioFile**: Audio file interface
-- **PlaylistItem**: Playlist item interface
-- **PlayMode**: Play mode enumeration
-- **PlayModeOption**: Play mode option configuration
 
 ## Usage
 
@@ -236,10 +191,15 @@ pnpm typecheck
 - Drag progress bar for precise positioning
 - Real-time playback status feedback
 
+### 💾 Persistent Storage
+- Audio files cached in IndexedDB for offline access
+- Playlist state and playback position automatically saved
+- Smart recovery on page reload
+
 ## License
 
 MIT License
 
 ---
 
-© 2025 Byron[https://github.com/byronogis]. All rights reserved.
+© 2025 [Byron](https://github.com/byronogis). All rights reserved.
