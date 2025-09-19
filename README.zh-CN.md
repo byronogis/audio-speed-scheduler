@@ -52,7 +52,7 @@
 
 ## 技术栈
 
-- **框架**: Nuxt 3 + Vue 3 (Composition API)
+- **框架**: Nuxt 4 + Vue 3 (Composition API)
 - **UI 组件**: Nuxt UI
 - **样式**: UnoCSS + Tailwind CSS
 - **图标**: Lucide Icons
@@ -182,7 +182,7 @@ pnpm typecheck
 - 避免操作冲突，提升用户体验
 
 ### ⚡ 现代化架构
-- 基于 Nuxt 3 和 Vue 3 Composition API
+- 基于 Nuxt 4 和 Vue 3 Composition API
 - 完整的 TypeScript 类型支持
 - 模块化组件设计，易于维护和扩展
 

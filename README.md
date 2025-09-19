@@ -52,7 +52,7 @@ A powerful audio playlist management tool that supports setting different playba
 
 ## Tech Stack
 
-- **Framework**: Nuxt 3 + Vue 3 (Composition API)
+- **Framework**: Nuxt 4 + Vue 3 (Composition API)
 - **UI Components**: Nuxt UI
 - **Styling**: UnoCSS + Tailwind CSS
 - **Icons**: Lucide Icons
@@ -182,7 +182,7 @@ pnpm typecheck
 - Avoid operation conflicts, enhance user experience
 
 ### ⚡ Modern Architecture
-- Based on Nuxt 3 and Vue 3 Composition API
+- Based on Nuxt 4 and Vue 3 Composition API
 - Complete TypeScript type support
 - Modular component design, easy to maintain and extend
 
