@@ -32,55 +32,56 @@
         <div
           v-for="(item, index) in playlist"
           :key="item.id"
-          class="grid grid-cols-[auto_1fr] md:grid-cols-[auto_1fr_auto] items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+          class="bg-gray-50 dark:bg-gray-800 rounded-lg p-3"
           :class="{ 'inset-ring-2 inset-ring-primary': currentPlayingIndex === index }"
         >
-          <div class="flex items-center gap-2 text-sm text-gray-500">
-            {{ index + 1 }}
+          <!-- 第一行：序号、文件名、操作按钮 -->
+          <div class="grid grid-cols-[auto_1fr_auto] items-center gap-3">
+            <div class="flex items-center gap-2 text-sm text-gray-500">
+              {{ index + 1 }}
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="font-medium text-gray-900 dark:text-white truncate">
+                {{ getAudioFileById(item.audioFileId, props.audioFiles)?.name || '未知文件' }}
+              </p>
+            </div>
+            <div class="flex items-center gap-2 justify-end">
+              <UButton
+                icon="i-lucide-arrow-up"
+                variant="ghost"
+                size="sm"
+                :disabled="index === 0"
+                @click="$emit('moveItem', index, -1)"
+              />
+              <UButton
+                icon="i-lucide-arrow-down"
+                variant="ghost"
+                size="sm"
+                :disabled="index === playlist.length - 1"
+                @click="$emit('moveItem', index, 1)"
+              />
+              <UButton
+                icon="i-lucide-trash-2"
+                variant="ghost"
+                color="error"
+                size="sm"
+                @click="$emit('removeItem', item.id)"
+              />
+            </div>
           </div>
-
-          <div class="flex-1 min-w-0">
-            <p class="font-medium text-gray-900 dark:text-white truncate">
-              {{ getAudioFileById(item.audioFileId, props.audioFiles)?.name || '未知文件' }}
-            </p>
-          </div>
-
-          <div class="flex items-center gap-2 col-span-2 md:col-span-1 justify-end">
-            <!-- 播放速度调节 -->
-            <UInputNumber
+          <!-- 第二行：播放速度Slider -->
+          <div class="mt-2 flex items-center gap-3">
+            <span class="text-xs text-gray-500 w-10 text-right">0.5x</span>
+            <USlider
               :model-value="item.playbackRate"
-              :step="0.1"
               :min="0.5"
               :max="3.0"
-              size="sm"
-              class="w-22"
-              @update:model-value="(value) => $emit('updatePlaybackRate', item.id, value)"
+              :step="0.1"
+              class="flex-1"
+              @update:model-value="(val) => val !== undefined && $emit('updatePlaybackRate', item.id, val)"
             />
-
-            <!-- 移动按钮 -->
-            <UButton
-              icon="i-lucide-arrow-up"
-              variant="ghost"
-              size="sm"
-              :disabled="index === 0"
-              @click="$emit('moveItem', index, -1)"
-            />
-            <UButton
-              icon="i-lucide-arrow-down"
-              variant="ghost"
-              size="sm"
-              :disabled="index === playlist.length - 1"
-              @click="$emit('moveItem', index, 1)"
-            />
-
-            <!-- 删除按钮 -->
-            <UButton
-              icon="i-lucide-trash-2"
-              variant="ghost"
-              color="error"
-              size="sm"
-              @click="$emit('removeItem', item.id)"
-            />
+            <span class="text-xs text-gray-500 w-10 text-left">3.0x</span>
+            <span class="ml-2 text-sm font-mono w-10 text-center">{{ item.playbackRate.toFixed(1) }}x</span>
           </div>
         </div>
       </div>
