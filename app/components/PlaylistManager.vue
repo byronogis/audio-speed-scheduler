@@ -7,7 +7,7 @@
           <UIcon name="i-lucide-list-music" class="text-primary" />
           <h2 class="text-xl font-semibold">{{ $t('playlistManager.title') }}</h2>
         </div>
-        
+
         <!-- 第二行：播放模式切换和功能按钮 -->
         <div v-if="playlist.length > 0" class="flex items-center justify-between gap-3">
           <!-- 左侧：播放模式切换 -->
@@ -18,7 +18,7 @@
             size="sm"
             class="w-32"
           />
-          
+
           <!-- 右侧：功能按钮 -->
           <div class="flex items-center gap-2">
             <UButton

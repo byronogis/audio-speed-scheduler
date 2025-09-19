@@ -9,29 +9,19 @@
 
     <div class="space-y-4">
       <!-- 文件上传区域 -->
-      <div
-        class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center cursor-pointer hover:border-primary transition-colors"
-        @dragover.prevent
-        @drop.prevent="handleFileDrop"
-        @click="triggerFileInput"
-      >
-        <UIcon name="i-lucide-music" class="mx-auto text-4xl text-gray-400 mb-2" />
-        <p class="text-gray-600 dark:text-gray-400 mb-2">
-          {{ $t('audioFileManager.upload.dragDrop') }}
-        </p>
-        <p class="text-sm text-gray-500">
-          {{ $t('audioFileManager.upload.supportedFormats') }}
-        </p>
-      </div>
-
-      <input
-        ref="fileInput"
-        type="file"
-        accept="audio/*"
+      <UFileUpload
+        v-model="uploadedFiles"
         multiple
-        class="hidden"
-        @change="handleFileSelect"
-      >
+        accept="audio/*"
+        icon="i-lucide-music"
+        :label="$t('audioFileManager.upload.dragDrop')"
+        :description="$t('audioFileManager.upload.supportedFormats')"
+        class="min-h-48"
+        :ui="{
+          base: 'border-2 border-dashed'
+        }"
+        @change="handleFileUpload"
+      />
 
       <!-- 已上传的音频文件列表 -->
       <div v-if="audioFiles.length > 0" class="space-y-2">
@@ -194,8 +184,8 @@ const emit = defineEmits<{
   previewSeekTo: [time: number]
 }>()
 
-// DOM 引用
-const fileInput = ref<HTMLInputElement>()
+// DOM 引用和上传状态
+const uploadedFiles = ref<File[] | null>(null)
 
 // 批量操作状态 - 每个文件的速度标签
 const batchSpeedTags = ref<Record<string, string[]>>({})
@@ -310,39 +300,25 @@ watch(() => props.audioFiles, (newFiles) => {
 })
 
 // 文件处理方法
-const triggerFileInput = () => {
-  fileInput.value?.click()
-}
-
-const handleFileSelect = (event: Event) => {
-  const target = event.target as HTMLInputElement
-  if (target.files) {
-    handleFiles(Array.from(target.files))
-  }
-}
-
-const handleFileDrop = (event: DragEvent) => {
-  if (event.dataTransfer?.files) {
-    handleFiles(Array.from(event.dataTransfer.files))
+const handleFileUpload = () => {
+  if (uploadedFiles.value) {
+    handleFiles(uploadedFiles.value)
+    uploadedFiles.value = null // 清空以便下次上传
   }
 }
 
 const handleFiles = (files: File[]) => {
-  const audioMimeTypes = ['audio/mp3', 'audio/wav', 'audio/ogg', 'audio/aac', 'audio/mpeg']
   const newAudioFiles: AudioFile[] = []
 
   files.forEach(file => {
-    const fileType = file.type.toLowerCase()
-    if (audioMimeTypes.some(type => fileType.includes(type.split('/')[1] || ''))) {
-      const audioFile: AudioFile = {
-        id: generateId(),
-        name: file.name,
-        size: file.size,
-        url: URL.createObjectURL(file),
-        file: file
-      }
-      newAudioFiles.push(audioFile)
+    const audioFile: AudioFile = {
+      id: generateId(),
+      name: file.name,
+      size: file.size,
+      url: URL.createObjectURL(file),
+      file: file
     }
+    newAudioFiles.push(audioFile)
   })
 
   if (newAudioFiles.length > 0) {
